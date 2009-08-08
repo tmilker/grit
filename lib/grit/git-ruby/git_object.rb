@@ -225,6 +225,16 @@ module Grit
       @entry.collect { |e| [[e.format_mode, e.format_type, e.sha1].join(' '), e.name].join("\t") }.join("\n")
     end
     
+    def to_hash
+      hash = {}
+      @entry.each do |e| 
+        hash[e.name] = { 'mode' => e.format_mode, 
+                          'type' => e.format_type, 
+                          'sha' => e.sha1 } 
+      end
+      hash
+    end
+    
     def actual_raw
       #@entry.collect { |e| e.raw.join(' '), e.name].join("\t") }.join("\n")
     end
@@ -249,9 +259,6 @@ module Grit
           author = UserInfo.new(value)
         when "committer"
           committer = UserInfo.new(value)
-        else
-          warn "unknown header '%s' in commit %s" % \
-            [key, rawobject.sha1.unpack("H*")[0]]
         end
       end
       if not tree && author && committer
@@ -285,6 +292,16 @@ module Grit
       output = "commit #{sha}\n"
       output += @headers + "\n\n"
       output += @message.split("\n").map { |l| '    ' + l }.join("\n") + "\n\n"
+    end
+    
+    def to_hash
+      h = {}
+      h['tree'] = @tree
+      h['author'] = @author
+      h['committer'] = @committer
+      h['message'] = @message
+      h['parents'] = @parent
+      h
     end
     
   end

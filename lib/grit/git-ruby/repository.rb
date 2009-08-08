@@ -37,7 +37,7 @@ module Grit
       def initialize(git_dir, options = {})
         @git_dir = git_dir
         @options = options
-        @packs = []
+        #@packs = []
       end
       
       # returns the loose objects object lazily
@@ -92,7 +92,7 @@ module Grit
           return o if o
         end
 
-#        puts "*#{sha1o}*"
+        puts "*#{sha1o}*"
         raise NoSuchShaFound
       end
 

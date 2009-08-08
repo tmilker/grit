@@ -222,6 +222,38 @@ module Grit
         Commit.find_all(other_repo, ref, {:max_count => 1}).first
       end
     end
+
+    def objects(refs)
+      Grit.no_quote = true
+      obj = self.git.rev_list({:objects => true}, refs).split("\n").map { |a| a[0, 40] }
+      Grit.no_quote = false
+      obj
+    end
+    
+    def objects_between(ref1, ref2 = nil)
+      if ref2
+        refs = "#{ref2}..#{ref1}"
+      else
+        refs = ref1
+      end
+      self.objects(refs)
+    end
+    
+    def diff_objects(commit_sha, parents = true)
+      revs = []
+      Grit.no_quote = true
+      if parents
+        # PARENTS:
+        cmd = "-r -t -m #{commit_sha}"
+        revs = self.git.diff_tree({}, cmd).strip.split("\n").map{ |a| a.split(' ')[3] }
+      else
+        # NO PARENTS:
+        cmd = "-r -t #{commit_sha}"
+        revs = self.git.method_missing('ls-tree', {}, "-r -t #{commit_sha}").split("\n").map{ |a| a.split("\t").first.split(' ')[2] }
+      end
+      Grit.no_quote = false
+      return revs.uniq.compact
+    end
     
     # The Tree object for the given treeish reference
     #   +treeish+ is the reference (default 'master')

@@ -39,9 +39,9 @@ module Grit
     end
 
     # git diff --full-index 'ec037431382e83c3e95d4f2b3d145afbac8ea55d' 'f1ec1aea10986159456846b8a05615b87828d6c6'
-    def diff(options, sha1, sha2)
-      try_run { ruby_git.diff(sha1, sha2, options) }
-    end
+    #def diff(options, sha1, sha2)
+    #  try_run { ruby_git.diff(sha1, sha2, options) }
+    #end
     
     def rev_list(options, ref = 'master')
       options.delete(:skip) if options[:skip].to_i == 0
