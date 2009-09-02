@@ -36,6 +36,8 @@ module Grit
         EntrySize = OffsetSize + SHA1Size
         EntrySizeV2 = SHA1Size + CrcSize + OffsetSize
 
+        attr_reader :size, :name
+
         def initialize(file)
           if file =~ /\.idx$/
             file = file[0...-3] + 'pack'
@@ -265,7 +267,7 @@ module Grit
           case type
           when OBJ_OFS_DELTA, OBJ_REF_DELTA
             data, type = unpack_deltified(packfile, type, offset, obj_offset, size, options)
-            #puts type
+            #puts "Type: #{type}"
           when OBJ_COMMIT, OBJ_TREE, OBJ_BLOB, OBJ_TAG
             data = unpack_compressed(offset, size)
           else
