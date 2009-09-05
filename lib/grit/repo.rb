@@ -253,7 +253,7 @@ module Grit
 
     def objects(refs)
       Grit.no_quote = true
-      obj = self.git.rev_list({:objects => true}, refs).split("\n").map { |a| a[0, 40] }
+      obj = self.git.rev_list({:objects => true, :timeout => false}, refs).split("\n").map { |a| a[0, 40] }
       Grit.no_quote = false
       obj
     end
@@ -273,11 +273,11 @@ module Grit
       if parents
         # PARENTS:
         cmd = "-r -t -m #{commit_sha}"
-        revs = self.git.diff_tree({}, cmd).strip.split("\n").map{ |a| r = a.split(' '); r[3] if r[1] != '160000' }
+        revs = self.git.diff_tree({:timeout => false}, cmd).strip.split("\n").map{ |a| r = a.split(' '); r[3] if r[1] != '160000' }
       else
         # NO PARENTS:
         cmd = "-r -t #{commit_sha}"
-        revs = self.git.method_missing('ls-tree', {}, "-r -t #{commit_sha}").split("\n").map{ |a| a.split("\t").first.split(' ')[2] }
+        revs = self.git.method_missing('ls-tree', {:timeout => false}, "-r -t #{commit_sha}").split("\n").map{ |a| a.split("\t").first.split(' ')[2] }
       end
       revs << self.commit(commit_sha).tree.id
       Grit.no_quote = false
