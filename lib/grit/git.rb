@@ -31,7 +31,7 @@ module Grit
       attr_accessor :git_binary, :git_timeout, :git_max_size
     end
   
-    self.git_binary   = "/usr/bin/env git"
+    self.git_binary   = (RUBY_PLATFORM =~ /mswin/ ? "git" : "/usr/bin/env git")
     self.git_timeout  = 10
     self.git_max_size = 5242880 # 5.megabytes
     
