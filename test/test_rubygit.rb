@@ -14,6 +14,7 @@ class TestRubyGit < Test::Unit::TestCase
     tf = Tempfile.new('gitdir')
     temppath = tf.path
     tf.unlink
+    temppath = Pathname.new(temppath).dirname.to_s
     
     git = Git.new(temppath)
     git.init({})
