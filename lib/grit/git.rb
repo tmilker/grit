@@ -54,6 +54,15 @@ module Grit
     end
     alias_method :e, :shell_escape
     
+    def quote_character
+      if RUBY_PLATFORM =~ /mswin/
+        return '"'
+      end
+
+      return '\''
+    end
+    alias_method :q, :quote_character
+
     # Check if a normal file exists on the filesystem
     #   +file+ is the relative path from the Git dir
     #
@@ -221,9 +230,9 @@ module Grit
       timeout  = true if timeout.nil?
 
       opt_args = transform_options(options)
-      ext_args = args.reject { |a| a.empty? }.map { |a| (a == '--' || a[0].chr == '|' || Grit.no_quote) ? a : "'#{e(a)}'" }
+      ext_args = args.reject { |a| a.empty? }.map { |a| (a == '--' || a[0].chr == '|' || Grit.no_quote) ? a : "#{q}#{e(a)}#{q}" }
 
-      call = "#{prefix}#{Git.git_binary} --git-dir='#{self.git_dir}' #{cmd.to_s.gsub(/_/, '-')} #{(opt_args + ext_args).join(' ')}#{e(postfix)}"
+      call = "#{prefix}#{Git.git_binary} --git-dir=#{q}#{self.git_dir}#{q} #{cmd.to_s.gsub(/_/, '-')} #{(opt_args + ext_args).join(' ')}#{e(postfix)}"
       Grit.log(call) if Grit.debug
       response, err = timeout ? sh(call) : wild_sh(call)
       Grit.log(response) if Grit.debug
