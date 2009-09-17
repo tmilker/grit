@@ -20,5 +20,5 @@ def absolute_project_path
 end
 
 def tempdir
-  Pathname.new(Tempfile.new('grittest').patch).dirname.to_s
+  Pathname.new(Tempfile.new('grittest').path).dirname.to_s
 end

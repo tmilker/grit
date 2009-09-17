@@ -365,7 +365,7 @@ module Grit
       real_options = default_options.merge(options)
       Git.new(path).fs_mkdir('..')
       self.git.clone(real_options, self.path, path)
-      self.new(path)
+      Repo.new(path)
     end
     
     # Archive the given treeish
