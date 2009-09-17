@@ -79,6 +79,14 @@ module Grit
       File.open(File.join(self.git_dir, file)).read
     end
     
+    # Touch a file on the file system.
+    #   +file+ is the relative path from the Git dir
+    #
+    # Returns nothing
+    def fs_touch( file )
+      FileUtils.touch(File.join(self.git_dir, file))
+    end
+
     # Write a normal file to the filesystem.
     #   +file+ is the relative path from the Git dir
     #   +contents+ is the String content to be written
@@ -97,7 +105,7 @@ module Grit
     #
     # Returns nothing
     def fs_delete(file)
-      FileUtils.rm_rf(File.join(self.git_dir, file))
+      FileUtils.rm_f(File.join(self.git_dir, file))
     end
     
     # Move a normal file
@@ -230,7 +238,7 @@ module Grit
       timeout  = true if timeout.nil?
 
       opt_args = transform_options(options)
-      ext_args = args.reject { |a| a.empty? }.map { |a| (a == '--' || a[0].chr == '|' || Grit.no_quote) ? a : "#{q}#{e(a)}#{q}" }
+      ext_args = args.reject { |a| a.nil? || a.empty? }.map { |a| (a == '--' || a[0].chr == '|' || Grit.no_quote) ? a : "#{q}#{e(a)}#{q}" }
 
       call = "#{prefix}#{Git.git_binary} --git-dir=#{q}#{self.git_dir}#{q} #{cmd.to_s.gsub(/_/, '-')} #{(opt_args + ext_args).join(' ')}#{e(postfix)}"
       Grit.log(call) if Grit.debug
@@ -294,7 +302,7 @@ module Grit
             # ignore
           else
             val = options.delete(opt)
-            args << "-#{opt.to_s} '#{e(val)}'"
+            args << "-#{opt.to_s} #{q}#{e(val)}#{q}"
           end
         else
           if options[opt] == true
@@ -303,7 +311,7 @@ module Grit
             # ignore
           else
             val = options.delete(opt)
-            args << "--#{opt.to_s.gsub(/_/, '-')}='#{e(val)}'"
+            args << "--#{opt.to_s.gsub(/_/, '-')}=#{q}#{e(val)}#{q}"
           end
         end
       end

@@ -30,10 +30,10 @@ class TestGit < Test::Unit::TestCase
   def test_transform_options
     assert_equal ["-s"], @git.transform_options({:s => true})
     assert_equal [], @git.transform_options({:s => false})
-    assert_equal ["-s '5'"], @git.transform_options({:s => 5})
+    assert_equal ["-s #{q}5#{q}"], @git.transform_options({:s => 5})
     
     assert_equal ["--max-count"], @git.transform_options({:max_count => true})
-    assert_equal ["--max-count='5'"], @git.transform_options({:max_count => 5})
+    assert_equal ["--max-count=#{q}5#{q}"], @git.transform_options({:max_count => 5})
     
     assert_equal ["-s", "-t"], @git.transform_options({:s => true, :t => true}).sort
   end
@@ -63,23 +63,27 @@ class TestGit < Test::Unit::TestCase
     Grit::Git.git_timeout = 5.0
   end
   
+  def q
+    '"'
+  end
+
   def test_it_really_shell_escapes_arguments_to_the_git_shell
-    @git.expects(:sh).with("#{Git.git_binary} --git-dir='#{@git.git_dir}' foo --bar='bazz\\'er'")
+    @git.expects(:sh).with("#{Git.git_binary} --git-dir=#{q}#{@git.git_dir}#{q} foo --bar=#{q}bazz\\'er#{q}")
     @git.foo(:bar => "bazz'er")
-    @git.expects(:sh).with("#{Git.git_binary} --git-dir='#{@git.git_dir}' bar -x 'quu\\'x'")
+    @git.expects(:sh).with("#{Git.git_binary} --git-dir=#{q}#{@git.git_dir}#{q} bar -x #{q}quu\\'x#{q}")
     @git.bar(:x => "quu'x")
   end
   
   def test_it_shell_escapes_the_standalone_argument
-    @git.expects(:sh).with("#{Git.git_binary} --git-dir='#{@git.git_dir}' foo 'bar\\'s'")
+    @git.expects(:sh).with("#{Git.git_binary} --git-dir=#{q}#{@git.git_dir}#{q} foo #{q}bar\\'s#{q}")
     @git.foo({}, "bar's")
     
-    @git.expects(:sh).with("#{Git.git_binary} --git-dir='#{@git.git_dir}' foo 'bar' '\\; echo \\'noooo\\''")
+    @git.expects(:sh).with("#{Git.git_binary} --git-dir=#{q}#{@git.git_dir}#{q} foo #{q}bar#{q} #{q}\\; echo \\'noooo\\'#{q}")
     @git.foo({}, "bar", "; echo 'noooo'")
   end
   
   def test_piping_should_work_on_1_9
-    @git.expects(:sh).with("#{Git.git_binary} --git-dir='#{@git.git_dir}' archive 'master' | gzip")
+    @git.expects(:sh).with("#{Git.git_binary} --git-dir=#{q}#{@git.git_dir}#{q} archive #{q}master#{q} | gzip")
     @git.archive({}, "master", "| gzip")
   end
 end

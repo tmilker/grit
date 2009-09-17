@@ -430,7 +430,7 @@ module Grit
     #
     # Returns nothing
     def enable_daemon_serve
-      self.git.fs_write(DAEMON_EXPORT_FILE, '')
+      self.git.fs_touch(DAEMON_EXPORT_FILE)
     end
     
     # Disable git-daemon serving of this repository by ensuring there is no
