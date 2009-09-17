@@ -64,7 +64,11 @@ class TestGit < Test::Unit::TestCase
   end
   
   def q
-    '"'
+    if RUBY_PLATFORM =~ /mswin/
+      return '"'
+    end
+
+    return '\''
   end
 
   def test_it_really_shell_escapes_arguments_to_the_git_shell
