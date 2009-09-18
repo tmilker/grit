@@ -16,7 +16,7 @@ class TestRubyGitIndex < Test::Unit::TestCase
   
   def create_temp_repo(clone_path)
     filename = 'git_test' + Time.now.to_i.to_s + rand(300).to_s.rjust(3, '0')
-    tmp_path = File.join("/tmp/", filename)
+    tmp_path = File.join("#{tempdir}/", filename)
     FileUtils.mkdir_p(tmp_path)
     FileUtils.cp_r(clone_path, tmp_path)
     File.join(tmp_path, 'dot_git_iv2')
