@@ -76,7 +76,7 @@ module Grit
     #
     # Returns the String contents of the file
     def fs_read(file)
-      File.open(File.join(self.git_dir, file)).read
+      File.open(File.join(self.git_dir, file)) { |f| f.read }
     end
     
     # Touch a file on the file system.
